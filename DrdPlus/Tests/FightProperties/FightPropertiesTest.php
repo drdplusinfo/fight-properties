@@ -12,7 +12,7 @@ use DrdPlus\Codes\DistanceUnitCode;
 use DrdPlus\Codes\ItemHoldingCode;
 use DrdPlus\Codes\ProfessionCode;
 use DrdPlus\Codes\Body\WoundTypeCode;
-use DrdPlus\FightProperties\CombatActions;
+use DrdPlus\CombatActions\CombatActions;
 use DrdPlus\FightProperties\CurrentProperties;
 use DrdPlus\FightProperties\FightProperties;
 use DrdPlus\Health\Inflictions\Glared;

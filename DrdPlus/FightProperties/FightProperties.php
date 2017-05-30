@@ -14,6 +14,7 @@ use DrdPlus\Codes\DistanceUnitCode;
 use DrdPlus\Codes\ItemHoldingCode;
 use DrdPlus\Codes\ProfessionCode;
 use DrdPlus\Codes\Body\WoundTypeCode;
+use DrdPlus\CombatActions\CombatActions;
 use DrdPlus\Health\Inflictions\Glared;
 use DrdPlus\Properties\Base\Strength;
 use DrdPlus\Properties\Body\Size;
@@ -113,7 +114,6 @@ class FightProperties extends StrictObject
      * @param Glared $glared
      * @throws \DrdPlus\FightProperties\Exceptions\CanNotHoldItByTwoHands
      * @throws \DrdPlus\FightProperties\Exceptions\CanNotHoldItByOneHand
-     * @throws \DrdPlus\FightProperties\Exceptions\IncompatibleCombatActions
      * @throws \DrdPlus\FightProperties\Exceptions\CanNotUseArmamentBecauseOfMissingStrength
      * @throws \DrdPlus\FightProperties\Exceptions\ImpossibleActionsWithCurrentWeaponlike
      * @throws \DrdPlus\FightProperties\Exceptions\UnknownWeaponHolding
