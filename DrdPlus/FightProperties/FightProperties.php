@@ -589,7 +589,7 @@ class FightProperties extends StrictObject
         $attackNumberModifier += $this->combatActions->getAttackNumberModifier();
 
         if (!$this->combatActions->usesSimplifiedLightingRules() && $this->glared->getCurrentMalus() < 0) {
-            // see PPH page 129 top left
+            /** see PPH page 129 top left, @link https://pph.drdplus.info/#cinnosti_pri_nedostatecne_viditelnosti */
             $attackNumberModifier += SumAndRound::half($this->glared->getCurrentMalus());
         }
 
