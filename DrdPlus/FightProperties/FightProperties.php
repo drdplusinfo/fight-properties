@@ -363,10 +363,9 @@ class FightProperties extends StrictObject
     }
 
     /**
-     * @param Tables $tables
      * @return Fight
      */
-    public function getFight(Tables $tables): Fight
+    public function getFight(): Fight
     {
         if ($this->fight === null) {
             /** @noinspection ExceptionsAnnotatingAndHandlingInspection */
@@ -374,7 +373,7 @@ class FightProperties extends StrictObject
                 $this->professionCode,
                 $this->propertiesForFight,
                 $this->propertiesForFight->getHeight(),
-                $tables
+                $this->tables
             );
         }
 
@@ -384,14 +383,13 @@ class FightProperties extends StrictObject
     /**
      * Final fight number including body state (level, fatigue, wounds, curses...), used weapon and chosen action.
      *
-     * @param Tables $tables
      * @return FightNumber
      */
-    public function getFightNumber(Tables $tables): FightNumber
+    public function getFightNumber(): FightNumber
     {
         if ($this->fightNumber === null) {
             /** @noinspection ExceptionsAnnotatingAndHandlingInspection */
-            $this->fightNumber = FightNumber::getIt($this->getFight($tables), $this->getLongerWeaponlike(), $tables)
+            $this->fightNumber = FightNumber::getIt($this->getFight(), $this->getLongerWeaponlike(), $this->tables)
                 ->add($this->getFightNumberModifier());
         }
 

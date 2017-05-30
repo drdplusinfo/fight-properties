@@ -45,6 +45,7 @@ use DrdPlus\Tables\Measurements\Distance\DistanceTable;
 use DrdPlus\Tables\Measurements\Wounds\WoundsBonus;
 use DrdPlus\Tables\Tables;
 use Granam\Tests\Tools\TestWithMockery;
+use Mockery\MockInterface;
 
 class FightPropertiesTest extends TestWithMockery
 {
@@ -258,6 +259,7 @@ class FightPropertiesTest extends TestWithMockery
 
         $this->I_can_get_expected_fight_and_fight_number(
             $fightProperties,
+            $tables,
             $professionCode,
             $currentProperties,
             $fightNumberMalusByStrengthWithWeapon,
@@ -358,6 +360,7 @@ class FightPropertiesTest extends TestWithMockery
 
     /**
      * @param FightProperties $fightProperties
+     * @param Tables|MockInterface $tables
      * @param ProfessionCode $professionCode
      * @param PropertiesForFight $currentProperties
      * @param int $fightNumberMalusFromStrengthForWeapon
@@ -375,6 +378,7 @@ class FightPropertiesTest extends TestWithMockery
      */
     private function I_can_get_expected_fight_and_fight_number(
         FightProperties $fightProperties,
+        Tables $tables,
         ProfessionCode $professionCode,
         PropertiesForFight $currentProperties,
         $fightNumberMalusFromStrengthForWeapon,
@@ -391,7 +395,8 @@ class FightPropertiesTest extends TestWithMockery
         $combatActionsFightNumberModifier
     )
     {
-        $tables = $this->createTablesWithCorrectionByHeightTable(
+        $this->addCorrectionByHeightTable(
+            $tables,
             $currentProperties->getHeight(),
             -876,
             $weaponlikeCode,
@@ -399,15 +404,15 @@ class FightPropertiesTest extends TestWithMockery
             $shieldCode,
             $shieldLength
         );
-        $fight = $fightProperties->getFight($tables);
+        $fight = $fightProperties->getFight();
         self::assertInstanceOf(Fight::class, $fight);
-        self::assertSame($fight, $fightProperties->getFight($tables), 'Expected same instances');
+        self::assertSame($fight, $fightProperties->getFight(), 'Expected same instances');
         $expectedFight = Fight::getIt($professionCode, $currentProperties, $currentProperties->getHeight(), $tables);
         self::assertSame($expectedFight->getValue(), $fight->getValue(), __FUNCTION__ . ' expected different fight value');
 
-        $fightNumber = $fightProperties->getFightNumber($tables);
+        $fightNumber = $fightProperties->getFightNumber();
         self::assertInstanceOf(FightNumber::class, $fightNumber);
-        self::assertSame($fightNumber, $fightProperties->getFightNumber($tables), 'Expected same instances');
+        self::assertSame($fightNumber, $fightProperties->getFightNumber(), 'Expected same instances');
         $expectedFightNumber = FightNumber::getIt($expectedFight, $shieldLength > $weaponlikeLength ? $shieldCode : $weaponlikeCode, $tables)
             ->add( // fight number modifier
                 $fightNumberMalusFromStrengthForWeapon
@@ -423,6 +428,7 @@ class FightPropertiesTest extends TestWithMockery
     }
 
     /**
+     * @param Tables|MockInterface $tables
      * @param Height $expectedHeight
      * @param $correctionByHeight
      * @param WeaponlikeCode $weaponlikeCode
@@ -431,7 +437,8 @@ class FightPropertiesTest extends TestWithMockery
      * @param $shieldLength = null
      * @return \Mockery\MockInterface|Tables
      */
-    private function createTablesWithCorrectionByHeightTable(
+    private function addCorrectionByHeightTable(
+        Tables $tables,
         Height $expectedHeight,
         $correctionByHeight,
         WeaponlikeCode $weaponlikeCode = null,
@@ -440,7 +447,6 @@ class FightPropertiesTest extends TestWithMockery
         $shieldLength = null
     )
     {
-        $tables = $this->mockery(Tables::class);
         $tables->shouldReceive('getCorrectionByHeightTable')
             ->andReturn($correctionByHeightTable = $this->mockery(CorrectionByHeightTable::class));
         $correctionByHeightTable->shouldReceive('getCorrectionByHeight')
@@ -809,6 +815,8 @@ class FightPropertiesTest extends TestWithMockery
     )
     {
         $tables = $this->mockery(Tables::class);
+        $tables->shouldReceive('__toString')
+            ->andReturn(Tables::class);
         $tables->shouldReceive('getCombatActionsWithWeaponTypeCompatibilityTable')
             ->andReturn($compatibilityTable = $this->mockery(CombatActionsWithWeaponTypeCompatibilityTable::class));
         $compatibilityTable->shouldReceive('getActionsPossibleWhenFightingWith')
