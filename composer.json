@@ -13,7 +13,8 @@
     "drd-plus/properties-by-levels": "dev-master",
     "drd-plus/health": "dev-master",
     "drd-plus/skills": "dev-master",
-    "drd-plus/combat-actions": "dev-master"
+    "drd-plus/combat-actions": "dev-master",
+    "drd-plus/current-properties": "dev-master"
   },
   "require-dev": {
     "phpunit/phpunit": "~6.0",

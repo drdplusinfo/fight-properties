@@ -13,7 +13,7 @@ use DrdPlus\Codes\ItemHoldingCode;
 use DrdPlus\Codes\ProfessionCode;
 use DrdPlus\Codes\Body\WoundTypeCode;
 use DrdPlus\CombatActions\CombatActions;
-use DrdPlus\FightProperties\PropertiesForFight;
+use DrdPlus\CurrentProperties\PropertiesForFight;
 use DrdPlus\FightProperties\FightProperties;
 use DrdPlus\Health\Inflictions\Glared;
 use DrdPlus\Properties\Base\Agility;

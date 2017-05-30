@@ -15,6 +15,7 @@ use DrdPlus\Codes\ItemHoldingCode;
 use DrdPlus\Codes\ProfessionCode;
 use DrdPlus\Codes\Body\WoundTypeCode;
 use DrdPlus\CombatActions\CombatActions;
+use DrdPlus\CurrentProperties\PropertiesForFight;
 use DrdPlus\Health\Inflictions\Glared;
 use DrdPlus\Properties\Base\Strength;
 use DrdPlus\Properties\Body\Size;
