@@ -40,8 +40,8 @@ use Granam\Strict\Object\StrictObject;
 
 class FightProperties extends StrictObject
 {
-    /** @var CurrentProperties */
-    private $currentProperties;
+    /** @var PropertiesForFight */
+    private $propertiesForFight;
     /** @var Skills */
     private $skills;
     /** @var BodyArmorCode */
@@ -99,7 +99,7 @@ class FightProperties extends StrictObject
      * So there is no malus by missing strength or skill. So you would have full cover with any shield...?
      * Don't think so... so that rule is IGNORED here.
      *
-     * @param CurrentProperties $currentProperties
+     * @param PropertiesForFight $propertiesForFight
      * @param CombatActions $combatActions
      * @param Skills $skills
      * @param BodyArmorCode $wornBodyArmor
@@ -121,7 +121,7 @@ class FightProperties extends StrictObject
      * @throws \Granam\Boolean\Tools\Exceptions\WrongParameterType
      */
     public function __construct(
-        CurrentProperties $currentProperties,
+        PropertiesForFight $propertiesForFight,
         CombatActions $combatActions,
         Skills $skills,
         BodyArmorCode $wornBodyArmor, /** use @see BodyArmorCode::WITHOUT_ARMOR for no armor */
@@ -136,7 +136,7 @@ class FightProperties extends StrictObject
         Glared $glared
     )
     {
-        $this->currentProperties = $currentProperties;
+        $this->propertiesForFight = $propertiesForFight;
         $this->skills = $skills;
         $this->wornBodyArmor = $wornBodyArmor;
         $this->wornHelm = $wornHelm;
@@ -165,8 +165,8 @@ class FightProperties extends StrictObject
     {
         $this->guardArmamentWearable(
             $this->wornBodyArmor,
-            $this->currentProperties->getStrength(),
-            $this->currentProperties->getSize(),
+            $this->propertiesForFight->getStrength(),
+            $this->propertiesForFight->getSize(),
             $this->tables->getArmourer()
         );
     }
@@ -195,8 +195,8 @@ class FightProperties extends StrictObject
     {
         $this->guardArmamentWearable(
             $this->wornHelm,
-            $this->currentProperties->getStrength(),
-            $this->currentProperties->getSize(),
+            $this->propertiesForFight->getStrength(),
+            $this->propertiesForFight->getSize(),
             $this->tables->getArmourer()
         );
     }
@@ -287,7 +287,7 @@ class FightProperties extends StrictObject
         $this->guardArmamentWearable(
             $weaponlikeCode,
             $currentStrengthForWeapon,
-            $this->currentProperties->getSize(),
+            $this->propertiesForFight->getSize(),
             $this->tables->getArmourer()
         );
     }
@@ -311,22 +311,22 @@ class FightProperties extends StrictObject
     private function getStrengthForWeaponOrShield(WeaponlikeCode $weaponOrShield, ItemHoldingCode $holding): Strength
     {
         if ($holding->holdsByMainHand()) {
-            return $this->currentProperties->getStrengthForMainHandOnly();
+            return $this->propertiesForFight->getStrengthOfMainHand();
         }
         if ($holding->holdsByOffhand()) {
             // your less-dominant hand is weaker (try it)
-            return $this->currentProperties->getStrengthForOffhandOnly();
+            return $this->propertiesForFight->getStrengthOfOffhand();
         }
         // two hands holding
         /** @noinspection ExceptionsAnnotatingAndHandlingInspection */
         if ($this->tables->getArmourer()->isTwoHandedOnly($weaponOrShield)) {
             // it is both-hands only weapon, can NOT count +2 bonus
-            return $this->currentProperties->getStrengthForMainHandOnly();
+            return $this->propertiesForFight->getStrengthOfMainHand();
         }
         // if one-handed is kept by both hands, the required strength is lower (fighter strength is higher respectively)
 
         /** @noinspection ExceptionsAnnotatingAndHandlingInspection */
-        return $this->currentProperties->getStrengthForMainHandOnly()->add(2);
+        return $this->propertiesForFight->getStrengthOfMainHand()->add(2);
     }
 
     /**
@@ -371,8 +371,8 @@ class FightProperties extends StrictObject
             /** @noinspection ExceptionsAnnotatingAndHandlingInspection */
             $this->fight = Fight::getIt(
                 $this->professionCode,
-                $this->currentProperties,
-                $this->currentProperties->getHeight(),
+                $this->propertiesForFight,
+                $this->propertiesForFight->getHeight(),
                 $tables
             );
         }
@@ -511,7 +511,7 @@ class FightProperties extends StrictObject
     public function getAttack(): Attack
     {
         if ($this->attack === null) {
-            $this->attack = Attack::getIt($this->currentProperties->getAgility());
+            $this->attack = Attack::getIt($this->propertiesForFight->getAgility());
         }
 
         return $this->attack;
@@ -523,7 +523,7 @@ class FightProperties extends StrictObject
     public function getShooting(): Shooting
     {
         if ($this->shooting === null) {
-            $this->shooting = Shooting::getIt($this->currentProperties->getKnack());
+            $this->shooting = Shooting::getIt($this->propertiesForFight->getKnack());
         }
 
         return $this->shooting;
@@ -702,7 +702,7 @@ class FightProperties extends StrictObject
                 $this->tables->getArmourer()->getEncounterRangeWithWeaponlike(
                     $this->weaponlike,
                     $this->getStrengthForWeaponlike(),
-                    $this->currentProperties->getSpeed()
+                    $this->propertiesForFight->getSpeed()
                 )
             );
         }
@@ -739,7 +739,7 @@ class FightProperties extends StrictObject
     public function getDefense(): Defense
     {
         if ($this->defense === null) {
-            $this->defense = Defense::getIt($this->currentProperties->getAgility());
+            $this->defense = Defense::getIt($this->propertiesForFight->getAgility());
         }
 
         return $this->defense;
@@ -886,7 +886,7 @@ class FightProperties extends StrictObject
                 $this->movedDistance = new Distance(0, DistanceUnitCode::METER, $this->tables->getDistanceTable());
             } else {
                 /** @noinspection ExceptionsAnnotatingAndHandlingInspection */
-                $speedInFight = $this->currentProperties->getSpeed()->add($this->combatActions->getSpeedModifier());
+                $speedInFight = $this->propertiesForFight->getSpeed()->add($this->combatActions->getSpeedModifier());
                 /** @noinspection ExceptionsAnnotatingAndHandlingInspection */
                 $distanceBonus = new DistanceBonus($speedInFight->getValue(), $this->tables->getDistanceTable());
                 $this->movedDistance = $distanceBonus->getDistance();

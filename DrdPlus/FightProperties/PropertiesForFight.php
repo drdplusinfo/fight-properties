@@ -7,18 +7,18 @@ use DrdPlus\Properties\Body\Size;
 use DrdPlus\Properties\Combat\BaseProperties;
 use DrdPlus\Properties\Derived\Speed;
 
-interface CurrentProperties extends BaseProperties
+interface PropertiesForFight extends BaseProperties
 {
 
     /**
      * @return Strength
      */
-    public function getStrengthForMainHandOnly(): Strength;
+    public function getStrengthOfMainHand(): Strength;
 
     /**
      * @return Strength
      */
-    public function getStrengthForOffhandOnly(): Strength;
+    public function getStrengthOfOffhand(): Strength;
 
     /**
      * Bonus of height in fact - usable for Fight and Speed
