@@ -22,10 +22,6 @@ class BodyPropertiesForFight extends StrictObject implements BaseProperties
     /**
      * @var Strength
      */
-    private $strengthOfMainHand;
-    /**
-     * @var Strength
-     */
     private $strengthOfOffhand;
     /**
      * @var Agility
@@ -62,8 +58,6 @@ class BodyPropertiesForFight extends StrictObject implements BaseProperties
 
     public function __construct(
         Strength $strength,
-        Strength $strengthOfMainHand,
-        Strength $strengthOfOffhand,
         Agility $agility,
         Knack $knack,
         Will $will,
@@ -75,8 +69,6 @@ class BodyPropertiesForFight extends StrictObject implements BaseProperties
     )
     {
         $this->strength = $strength;
-        $this->strengthOfMainHand = $strengthOfMainHand;
-        $this->strengthOfOffhand = $strengthOfOffhand;
         $this->agility = $agility;
         $this->knack = $knack;
         $this->will = $will;
@@ -100,7 +92,7 @@ class BodyPropertiesForFight extends StrictObject implements BaseProperties
      */
     public function getStrengthOfMainHand(): Strength
     {
-        return $this->strengthOfMainHand;
+        return $this->getStrength();
     }
 
     /**
@@ -108,6 +100,11 @@ class BodyPropertiesForFight extends StrictObject implements BaseProperties
      */
     public function getStrengthOfOffhand(): Strength
     {
+        if ($this->strengthOfOffhand === null) {
+            /** @noinspection ExceptionsAnnotatingAndHandlingInspection */
+            $this->strengthOfOffhand = $this->getStrength()->sub(2); // offhand has a malus to strength (try to carry you purchase in offhand sometimes...)
+        }
+
         return $this->strengthOfOffhand;
     }
 
