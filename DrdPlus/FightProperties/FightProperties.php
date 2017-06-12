@@ -67,7 +67,7 @@ class FightProperties extends StrictObject
     /** @var Glared */
     private $glared;
     /** @var bool */
-    private $fightsNaturalAnimal;
+    private $fightsFreeWillAnimal;
 
     /** @var Defense */
     private $defense;
@@ -115,7 +115,7 @@ class FightProperties extends StrictObject
      * @param ShieldCode $shield
      * @param bool $enemyIsFasterThanYou
      * @param Glared $glared
-     * @param bool $fightsNaturalAnimal
+     * @param bool $fightsFreeWillAnimal
      * @throws \DrdPlus\FightProperties\Exceptions\CanNotHoldItByTwoHands
      * @throws \DrdPlus\FightProperties\Exceptions\CanNotHoldItByOneHand
      * @throws \DrdPlus\FightProperties\Exceptions\CanNotUseArmamentBecauseOfMissingStrength
@@ -138,7 +138,7 @@ class FightProperties extends StrictObject
         ShieldCode $shield, /** use @see ShieldCode::WITHOUT_SHIELD for no shield */
         bool $enemyIsFasterThanYou,
         Glared $glared,
-        bool $fightsNaturalAnimal
+        bool $fightsFreeWillAnimal
     )
     {
         $this->bodyPropertiesForFight = $bodyPropertiesForFight;
@@ -154,7 +154,7 @@ class FightProperties extends StrictObject
         $this->shield = $shield;
         $this->enemyIsFasterThanYou = ToBoolean::toBoolean($enemyIsFasterThanYou);
         $this->glared = $glared;
-        $this->fightsNaturalAnimal = $fightsNaturalAnimal;
+        $this->fightsFreeWillAnimal = $fightsFreeWillAnimal;
         $this->guardWornBodyArmorWearable();
         $this->guardWornHelmWearable();
         $this->guardKnownHolding();
@@ -599,8 +599,9 @@ class FightProperties extends StrictObject
             $attackNumberModifier += SumAndRound::half($this->glared->getCurrentMalus());
         }
 
-        if ($this->fightsNaturalAnimal) {
-            $attackNumberModifier += $this->skills->getBonusToAttackNumberAgainstNaturalAnimal();
+        // zoology skill
+        if ($this->fightsFreeWillAnimal) {
+            $attackNumberModifier += $this->skills->getBonusToAttackNumberAgainstFreeWillAnimal();
         }
 
         // distance effect (for ranged only)
@@ -663,6 +664,9 @@ class FightProperties extends StrictObject
                 $this->tables->getWeaponlikeTableByWeaponlikeCode($this->weaponlike)
                     ->getWoundsTypeOf($this->weaponlike) === WoundTypeCode::CRUSH
             );
+            if ($this->fightsFreeWillAnimal) {
+                $baseOfWoundsValue += $this->skills->getBonusToBaseOfWoundsAgainstFreeWillAnimal();
+            }
 
             $this->baseOfWounds = new BaseOfWounds($baseOfWoundsValue, $this->tables->getWoundsTable());
         }
@@ -756,7 +760,7 @@ class FightProperties extends StrictObject
     /**
      * Your defense WITHOUT weapon and shield.
      * For standard defense @see getDefenseNumberWithShield and @see getDefenseNumberWithWeaponlike
-     * Note: armor affects agility (can give restriction), but does NOT affect defense number directly -
+     * Note: armor affects agility (can give restriction), but does NOT change defense number directly -
      * its protection is used after hit to lower final damage.
      *
      * @return DefenseNumber
@@ -831,6 +835,9 @@ class FightProperties extends StrictObject
             /** @noinspection ExceptionsAnnotatingAndHandlingInspection */
             $coverModifier += $this->skills->getMalusToCoverWithShield($this->tables);
         }
+        if ($this->fightsFreeWillAnimal) {
+            $coverModifier += $this->skills->getBonusToCoverAgainstFreeWillAnimal();
+        }
 
         return $coverModifier;
     }
@@ -875,6 +882,9 @@ class FightProperties extends StrictObject
         // skill effect
         /** @noinspection ExceptionsAnnotatingAndHandlingInspection */
         $coverModifier += $this->skills->getMalusToCoverWithShield($this->tables);
+        if ($this->fightsFreeWillAnimal) {
+            $coverModifier += $this->skills->getBonusToCoverAgainstFreeWillAnimal();
+        }
 
         return $coverModifier;
     }

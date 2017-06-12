@@ -320,12 +320,17 @@ class FightPropertiesTest extends TestWithMockery
             $attackNumberBonusFromZoology
         );
 
+        $baseOfWoundsBonusFromZoology = 0;
+        if ($fightsAnimal) {
+            $this->addBaseOfWoundsBonusByZoologySkill($skills, $baseOfWoundsBonusFromZoology = 1937);
+        }
         $this->I_can_get_expected_base_of_wounds(
             $fightProperties,
             $weaponBaseOfWounds,
             $baseOfWoundsMalusFromSkills,
             $baseOfWoundsBonusForHolding,
-            $baseOfWoundsModifierFromActions
+            $baseOfWoundsModifierFromActions,
+            $baseOfWoundsBonusFromZoology
         );
 
         $this->I_can_get_expected_loading_in_rounds($fightProperties, $expectedLoadingInRounds);
@@ -334,6 +339,10 @@ class FightPropertiesTest extends TestWithMockery
 
         $this->I_can_get_expected_maximal_range($fightProperties, $weaponIsShooting);
 
+        $coverBonusFromZoology = 0;
+        if ($fightsAnimal) {
+            $this->addCoverBonusByZoologySkill($skills, $coverBonusFromZoology = 784512);
+        }
         $this->I_can_get_defense_and_defense_number(
             $fightProperties,
             $bodyPropertiesForFight,
@@ -345,7 +354,8 @@ class FightPropertiesTest extends TestWithMockery
             $skillsMalusToCoverWithWeapon,
             $defenseNumberMalusByStrengthWithShield,
             $coverOfShield,
-            $skillsMalusToCoverWithShield
+            $skillsMalusToCoverWithShield,
+            $coverBonusFromZoology
         );
 
         $this->I_can_get_moved_distance($fightProperties, $expectedMovedDistance);
@@ -548,20 +558,22 @@ class FightPropertiesTest extends TestWithMockery
      * @param int $baseOfWoundsMalusFromSkills
      * @param int $baseOfWoundsBonusForHolding
      * @param int $baseOfWoundsModifierFromActions
+     * @param int $baseOfWoundsBonusFromZoology
      */
     private function I_can_get_expected_base_of_wounds(
         FightProperties $fightProperties,
         $weaponBaseOfWounds,
         $baseOfWoundsMalusFromSkills,
         $baseOfWoundsBonusForHolding,
-        $baseOfWoundsModifierFromActions
+        $baseOfWoundsModifierFromActions,
+        int $baseOfWoundsBonusFromZoology
     )
     {
         $baseOfWounds = $fightProperties->getBaseOfWounds();
         self::assertInstanceOf(WoundsBonus::class, $baseOfWounds);
         self::assertSame($baseOfWounds, $fightProperties->getBaseOfWounds(), 'Expected same instances');
         $expectedBaseOfWoundsValue = $weaponBaseOfWounds + $baseOfWoundsMalusFromSkills + $baseOfWoundsBonusForHolding
-            + $baseOfWoundsModifierFromActions;
+            + $baseOfWoundsModifierFromActions + $baseOfWoundsBonusFromZoology;
         self::assertSame($baseOfWounds->getValue(), $expectedBaseOfWoundsValue);
     }
 
@@ -623,6 +635,7 @@ class FightPropertiesTest extends TestWithMockery
      * @param int $defenseNumberMalusByStrengthWithShield
      * @param int $coverOfShield
      * @param int $skillsMalusToCoverWithShield
+     * @param int $coverBonusFromZoology
      */
     private function I_can_get_defense_and_defense_number(
         FightProperties $fightProperties,
@@ -635,7 +648,8 @@ class FightPropertiesTest extends TestWithMockery
         $skillsMalusToCoverWithWeapon,
         $defenseNumberMalusByStrengthWithShield,
         $coverOfShield,
-        $skillsMalusToCoverWithShield
+        $skillsMalusToCoverWithShield,
+        int $coverBonusFromZoology
     )
     {
         $defense = $fightProperties->getDefense();
@@ -652,6 +666,7 @@ class FightPropertiesTest extends TestWithMockery
             $defenseNumberMalusByStrengthWithWeapon
             + $coverOfWeapon
             + $skillsMalusToCoverWithWeapon
+            + $coverBonusFromZoology
         );
         self::assertSame(
             $expectedDefenseNumberWithWeapon->getValue(),
@@ -663,6 +678,7 @@ class FightPropertiesTest extends TestWithMockery
             $defenseNumberMalusByStrengthWithShield
             + $coverOfShield
             + $skillsMalusToCoverWithShield
+            + $coverBonusFromZoology
         );
         self::assertSame(
             $expectedDefenseNumberWithShield->getValue(),
@@ -1267,7 +1283,27 @@ class FightPropertiesTest extends TestWithMockery
      */
     private function addAttackNumberBonusByZoologySkill(Skills $skills, int $fightNumberBonus)
     {
-        $skills->shouldReceive('getBonusToAttackNumberAgainstNaturalAnimal')
+        $skills->shouldReceive('getBonusToAttackNumberAgainstFreeWillAnimal')
+            ->andReturn($fightNumberBonus);
+    }
+
+    /**
+     * @param Skills|\Mockery\MockInterface $skills
+     * @param int $fightNumberBonus
+     */
+    private function addCoverBonusByZoologySkill(Skills $skills, int $fightNumberBonus)
+    {
+        $skills->shouldReceive('getBonusToCoverAgainstFreeWillAnimal')
+            ->andReturn($fightNumberBonus);
+    }
+
+    /**
+     * @param Skills|\Mockery\MockInterface $skills
+     * @param int $fightNumberBonus
+     */
+    private function addBaseOfWoundsBonusByZoologySkill(Skills $skills, int $fightNumberBonus)
+    {
+        $skills->shouldReceive('getBonusToBaseOfWoundsAgainstFreeWillAnimal')
             ->andReturn($fightNumberBonus);
     }
 
@@ -1776,7 +1812,7 @@ class FightPropertiesTest extends TestWithMockery
     {
         $armourer = $this->createArmourer();
 
-        $weaponlikeCode = $this->createWeapon('foo');
+        $weaponlikeCode = $this->createWeapon();
         $strengthOfMainHand = Strength::getIt(123);
         $size = Size::getIt(456);
         $this->addCanUseArmament($armourer, $weaponlikeCode, $strengthOfMainHand, $size, true, true, true, true /* two handed only */);
