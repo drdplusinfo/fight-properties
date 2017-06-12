@@ -63,6 +63,7 @@ class FightPropertiesTest extends TestWithMockery
      * @param int $combatActionsSpeedModifier
      * @param bool $usesSimplifiedLightingRules
      * @param int $currentMalusFromLightingContrast
+     * @param bool $fightsAnimal
      */
     public function I_can_use_it(
         $enemyIsFasterThanYou,
@@ -75,7 +76,8 @@ class FightPropertiesTest extends TestWithMockery
         $targetDistanceInMeters,
         $combatActionsSpeedModifier,
         $usesSimplifiedLightingRules,
-        $currentMalusFromLightingContrast
+        $currentMalusFromLightingContrast,
+        bool $fightsAnimal
     )
     {
         $armourer = $this->createArmourer();
@@ -254,7 +256,8 @@ class FightPropertiesTest extends TestWithMockery
             $fightsWithTwoWeapons,
             $shieldCode,
             $enemyIsFasterThanYou,
-            $this->createGlared($currentMalusFromLightingContrast)
+            $this->createGlared($currentMalusFromLightingContrast),
+            $fightsAnimal
         );
 
         $this->I_can_get_expected_fight_and_fight_number(
@@ -296,6 +299,10 @@ class FightPropertiesTest extends TestWithMockery
                 $attackNumberModifierByTargetSize = 4053
             );
         }
+        $attackNumberBonusFromZoology = 0;
+        if ($fightsAnimal) {
+            $this->addAttackNumberBonusByZoologySkill($skills, $attackNumberBonusFromZoology = 94631);
+        }
         $this->I_can_get_expected_shooting_attack_and_attack_number(
             $fightProperties,
             $bodyPropertiesForFight,
@@ -309,7 +316,8 @@ class FightPropertiesTest extends TestWithMockery
             $targetSize,
             $attackNumberModifierByTargetSize,
             $usesSimplifiedLightingRules,
-            $currentMalusFromLightingContrast
+            $currentMalusFromLightingContrast,
+            $attackNumberBonusFromZoology
         );
 
         $this->I_can_get_expected_base_of_wounds(
@@ -347,14 +355,14 @@ class FightPropertiesTest extends TestWithMockery
     {
         // enemy is faster than you, weapon is two handed only, holds weapon by two hands, weapon in main hand,
         // weapon is shield, weapon is shooting, weapon is longer or same as shield, target distance in meters,
-        // speed modifier from combat actions, uses simplified lighting rules, malus from lighting contrast,
+        // speed modifier from combat actions, uses simplified lighting rules, malus from lighting contrast, fights animal
         return [
-            [true, false, false, true, false, false, true, 0, 0, true, 0],
-            [true, false, false, true, false, false, false, 0, 0, true, 0],
-            [true, false /* not shooting */, false, false, true, false, true, 14789 /* distance should be ignored for non-ranged weapon */, 4596, false, 0],
-            [false, false, true, true, false, true, false, 1, -741, true, -987654 /* malus from lighting should be ignored on simplified rules usage */],
-            [false, false, true, true, false, true, true, 78515, 0, false, -123 /* odd */],
-            [false, true, true, false, true, false, false, 0, 1, false, -2 /* even */],
+            [true, false, false, true, false, false, true, 0, 0, true, 0, false],
+            [true, false, false, true, false, false, false, 0, 0, true, 0, true],
+            [true, false /* not shooting */, false, false, true, false, true, 14789 /* distance should be ignored for non-ranged weapon */, 4596, false, 0, false],
+            [false, false, true, true, false, true, false, 1, -741, true, -987654 /* malus from lighting should be ignored on simplified rules usage */, false],
+            [false, false, true, true, false, true, true, 78515, 0, false, -123 /* odd */, false],
+            [false, true, true, false, true, false, false, 0, 1, false, -2 /* even */, true],
         ];
     }
 
@@ -482,6 +490,7 @@ class FightPropertiesTest extends TestWithMockery
      * @param int $attackNumberModifierByTargetSize
      * @param bool $usesSimplifiedLightingRules
      * @param int $currentMalusFromLightingContrast
+     * @param int $attackNumberBonusFromZoology
      */
     private function I_can_get_expected_shooting_attack_and_attack_number(
         FightProperties $fightProperties,
@@ -496,7 +505,8 @@ class FightPropertiesTest extends TestWithMockery
         Size $targetSize,
         $attackNumberModifierByTargetSize,
         $usesSimplifiedLightingRules,
-        $currentMalusFromLightingContrast
+        $currentMalusFromLightingContrast,
+        int $attackNumberBonusFromZoology
     )
     {
         $shooting = $fightProperties->getShooting();
@@ -523,6 +533,7 @@ class FightPropertiesTest extends TestWithMockery
             + $attackNumberModifierByTargetDistance
             + $attackNumberModifierByTargetSize
             + ($usesSimplifiedLightingRules ? 0 : round($currentMalusFromLightingContrast / 2 /* just half */))
+            + $attackNumberBonusFromZoology
         );
         self::assertSame(
             $expectedAttackNumber->getValue(),
@@ -1251,6 +1262,16 @@ class FightPropertiesTest extends TestWithMockery
     }
 
     /**
+     * @param Skills|\Mockery\MockInterface $skills
+     * @param int $fightNumberBonus
+     */
+    private function addAttackNumberBonusByZoologySkill(Skills $skills, int $fightNumberBonus)
+    {
+        $skills->shouldReceive('getBonusToAttackNumberAgainstNaturalAnimal')
+            ->andReturn($fightNumberBonus);
+    }
+
+    /**
      * @see FightProperties::getFightNumberMalusFromWeaponlikesBySkills
      * @param Skills|\Mockery\MockInterface $skills
      * @param WeaponlikeCode $weaponlikeCode
@@ -1531,7 +1552,8 @@ class FightPropertiesTest extends TestWithMockery
             false, // does not fight with two weapons now
             $shieldCode,
             false, // enemy is not faster now
-            $this->createGlared()
+            $this->createGlared(),
+            false // not fighting animal (whatever here)
         );
     }
 
@@ -1596,7 +1618,8 @@ class FightPropertiesTest extends TestWithMockery
             $fightsWithTwoWeapons,
             $shieldCode,
             false, // enemy is not faster now
-            $this->createGlared()
+            $this->createGlared(),
+            false // not fighting animal (whatever here)
         );
     }
 
@@ -1648,7 +1671,8 @@ class FightPropertiesTest extends TestWithMockery
             true, // fights with two weapons (does not affect this test)
             $shieldCode,
             false, // enemy is not faster now
-            $this->createGlared()
+            $this->createGlared(),
+            false // not fighting animal (whatever here)
         );
     }
 
@@ -1693,7 +1717,8 @@ class FightPropertiesTest extends TestWithMockery
             true, // fights with two weapons (does not affect this test)
             $shieldCode,
             false, // enemy is not faster now (does not affect this test)
-            $this->createGlared()
+            $this->createGlared(),
+            false // not fighting animal (whatever here)
         );
     }
 
@@ -1737,7 +1762,8 @@ class FightPropertiesTest extends TestWithMockery
             true, // fights with two weapons (does not affect this test)
             $shieldCode,
             false, // enemy is not faster now (does not affect this test)
-            $this->createGlared()
+            $this->createGlared(),
+            false // not fighting animal (whatever here)
         );
     }
 
@@ -1778,7 +1804,8 @@ class FightPropertiesTest extends TestWithMockery
             false,
             $shieldCode,
             false, // enemy is not faster now (does not affect this test)
-            $this->createGlared()
+            $this->createGlared(),
+            false // not fighting animal (whatever here)
         );
     }
 

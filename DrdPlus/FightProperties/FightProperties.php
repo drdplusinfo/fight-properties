@@ -66,6 +66,9 @@ class FightProperties extends StrictObject
     private $enemyIsFasterThanYou;
     /** @var Glared */
     private $glared;
+    /** @var bool */
+    private $fightsNaturalAnimal;
+
     /** @var Defense */
     private $defense;
     /** @var Attack */
@@ -112,6 +115,7 @@ class FightProperties extends StrictObject
      * @param ShieldCode $shield
      * @param bool $enemyIsFasterThanYou
      * @param Glared $glared
+     * @param bool $fightsNaturalAnimal
      * @throws \DrdPlus\FightProperties\Exceptions\CanNotHoldItByTwoHands
      * @throws \DrdPlus\FightProperties\Exceptions\CanNotHoldItByOneHand
      * @throws \DrdPlus\FightProperties\Exceptions\CanNotUseArmamentBecauseOfMissingStrength
@@ -130,10 +134,11 @@ class FightProperties extends StrictObject
         Tables $tables,
         WeaponlikeCode $weaponlike, /** use @see MeleeWeaponCode::HAND for no weapon */
         ItemHoldingCode $weaponlikeHolding,
-        $fightsWithTwoWeapons,
+        bool $fightsWithTwoWeapons,
         ShieldCode $shield, /** use @see ShieldCode::WITHOUT_SHIELD for no shield */
-        $enemyIsFasterThanYou,
-        Glared $glared
+        bool $enemyIsFasterThanYou,
+        Glared $glared,
+        bool $fightsNaturalAnimal
     )
     {
         $this->bodyPropertiesForFight = $bodyPropertiesForFight;
@@ -149,6 +154,7 @@ class FightProperties extends StrictObject
         $this->shield = $shield;
         $this->enemyIsFasterThanYou = ToBoolean::toBoolean($enemyIsFasterThanYou);
         $this->glared = $glared;
+        $this->fightsNaturalAnimal = $fightsNaturalAnimal;
         $this->guardWornBodyArmorWearable();
         $this->guardWornHelmWearable();
         $this->guardKnownHolding();
@@ -591,6 +597,10 @@ class FightProperties extends StrictObject
         if (!$this->combatActions->usesSimplifiedLightingRules() && $this->glared->getCurrentMalus() < 0) {
             /** see PPH page 129 top left, @link https://pph.drdplus.info/#cinnosti_pri_nedostatecne_viditelnosti */
             $attackNumberModifier += SumAndRound::half($this->glared->getCurrentMalus());
+        }
+
+        if ($this->fightsNaturalAnimal) {
+            $attackNumberModifier += $this->skills->getBonusToAttackNumberAgainstNaturalAnimal();
         }
 
         // distance effect (for ranged only)
