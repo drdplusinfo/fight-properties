@@ -67,6 +67,8 @@ class FightProperties extends StrictObject
     /** @var Glared */
     private $glared;
     /** @var bool */
+    private $fightsOnHorseback;
+    /** @var bool */
     private $fightsFreeWillAnimal;
 
     /** @var Defense */
@@ -115,6 +117,7 @@ class FightProperties extends StrictObject
      * @param ShieldCode $shield
      * @param bool $enemyIsFasterThanYou
      * @param Glared $glared
+     * @param bool $fightsOnHorseback
      * @param bool $fightsFreeWillAnimal
      * @throws \DrdPlus\FightProperties\Exceptions\CanNotHoldItByTwoHands
      * @throws \DrdPlus\FightProperties\Exceptions\CanNotHoldItByOneHand
@@ -138,6 +141,7 @@ class FightProperties extends StrictObject
         ShieldCode $shield, /** use @see ShieldCode::WITHOUT_SHIELD for no shield */
         bool $enemyIsFasterThanYou,
         Glared $glared,
+        bool $fightsOnHorseback,
         bool $fightsFreeWillAnimal
     )
     {
@@ -154,6 +158,7 @@ class FightProperties extends StrictObject
         $this->shield = $shield;
         $this->enemyIsFasterThanYou = ToBoolean::toBoolean($enemyIsFasterThanYou);
         $this->glared = $glared;
+        $this->fightsOnHorseback = $fightsOnHorseback;
         $this->fightsFreeWillAnimal = $fightsFreeWillAnimal;
         $this->guardWornBodyArmorWearable();
         $this->guardWornHelmWearable();
@@ -487,6 +492,11 @@ class FightProperties extends StrictObject
             );
         }
 
+        // ride skill
+        if ($this->fightsOnHorseback) {
+            $fightNumberMalus += $this->skills->getMalusToAttackNumberWhenRiding();
+        }
+
         return $fightNumberMalus;
     }
 
@@ -597,6 +607,11 @@ class FightProperties extends StrictObject
         if (!$this->combatActions->usesSimplifiedLightingRules() && $this->glared->getCurrentMalus() < 0) {
             /** see PPH page 129 top left, @link https://pph.drdplus.info/#cinnosti_pri_nedostatecne_viditelnosti */
             $attackNumberModifier += SumAndRound::half($this->glared->getCurrentMalus());
+        }
+
+        // ride skill
+        if ($this->fightsOnHorseback) {
+            $attackNumberModifier += $this->skills->getMalusToAttackNumberWhenRiding();
         }
 
         // zoology skill
@@ -782,6 +797,11 @@ class FightProperties extends StrictObject
             if (!$this->combatActions->usesSimplifiedLightingRules() && $this->glared->getCurrentMalus() < 0) {
                 // see PPH page 129 top left
                 $defenseNumber = $defenseNumber->add($this->glared->getCurrentMalus());
+            }
+
+            // ride skill
+            if ($this->fightsOnHorseback) {
+                $defenseNumber = $defenseNumber->add($this->skills->getMalusToAttackNumberWhenRiding());
             }
 
             $this->defenseNumber = $defenseNumber;

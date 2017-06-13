@@ -63,20 +63,24 @@ class FightPropertiesTest extends TestWithMockery
      * @param int $combatActionsSpeedModifier
      * @param bool $usesSimplifiedLightingRules
      * @param int $currentMalusFromLightingContrast
+     * @param int $malusFromRiding
+     * @param bool $onHorseback
      * @param bool $fightsAnimal
      */
     public function I_can_use_it(
-        $enemyIsFasterThanYou,
-        $weaponIsTwoHandedOnly,
-        $holdWeaponByTwoHands,
-        $weaponIsInMainHand,
-        $weaponIsShield,
-        $weaponIsShooting, // and implicitly ranged
-        $weaponIsLongerOrSameAsShield,
-        $targetDistanceInMeters,
-        $combatActionsSpeedModifier,
-        $usesSimplifiedLightingRules,
-        $currentMalusFromLightingContrast,
+        bool $enemyIsFasterThanYou,
+        bool $weaponIsTwoHandedOnly,
+        bool $holdWeaponByTwoHands,
+        bool $weaponIsInMainHand,
+        bool $weaponIsShield,
+        bool $weaponIsShooting, // and implicitly ranged
+        bool $weaponIsLongerOrSameAsShield,
+        int $targetDistanceInMeters,
+        int $combatActionsSpeedModifier,
+        bool $usesSimplifiedLightingRules,
+        int $currentMalusFromLightingContrast,
+        int $malusFromRiding,
+        bool $onHorseback,
         bool $fightsAnimal
     )
     {
@@ -141,6 +145,7 @@ class FightPropertiesTest extends TestWithMockery
         );
         $this->addOffensiveness($armourer, $weaponlikeCode, $offensiveness = 12123);
         $this->addCombatActionsAttackNumber($combatActions, $combatActionsAttackNumberModifier = 8171);
+        $this->addMalusToAttackNumberByRiding($skills, $malusFromRiding);
 
         // base of wounds
         $this->addWeaponBaseOfWounds($armourer, $weaponlikeCode, $strengthForWeapon, $weaponBaseOfWounds = 91967);
@@ -159,7 +164,7 @@ class FightPropertiesTest extends TestWithMockery
 
         // fight number
         $fightsWithTwoWeapons = false;
-        $this->addFightNumberMalusFromWeaponlikeBySkills(
+        $this->addMalusToFightNumberWithWeaponlike(
             $skills,
             $weaponlikeCode,
             $missingWeaponSkillsTable,
@@ -190,6 +195,7 @@ class FightPropertiesTest extends TestWithMockery
             $weaponIsShield ? $weaponlikeCode : null,
             $fightNumberMalusFromShieldAsWeapon = $weaponIsShield ? -4518 : 0
         );
+        $this->addMalusToFightNumberByRiding($skills, $malusFromRiding);
         $weaponLength = 55;
         $shieldLength = $weaponIsLongerOrSameAsShield ? $weaponLength : 66;
         $this->addFightNumberBonusByWeaponlikeLength($armourer, $weaponlikeCode, $weaponLength, $shieldCode, $shieldLength);
@@ -220,6 +226,7 @@ class FightPropertiesTest extends TestWithMockery
         }
         $this->addDefenseNumberMalusByStrength($armourer, $shieldCode, $strengthForShield, $defenseNumberMalusByStrengthWithShield = -1640);
         $this->addCoverOf($armourer, $shieldCode, $coverOfShield = 712479);
+        $this->addMalusToDefenseNumberByRiding($skills, $malusFromRiding);
 
         // loading in rounds
         $expectedLoadingInRounds = 0;
@@ -257,6 +264,7 @@ class FightPropertiesTest extends TestWithMockery
             $shieldCode,
             $enemyIsFasterThanYou,
             $this->createGlared($currentMalusFromLightingContrast),
+            $onHorseback,
             $fightsAnimal
         );
 
@@ -276,7 +284,8 @@ class FightPropertiesTest extends TestWithMockery
             $weaponLength,
             $shieldCode,
             $shieldLength,
-            $combatActionsFightNumberModifier
+            $combatActionsFightNumberModifier,
+            $onHorseback ? $malusFromRiding : 0
         );
 
         $targetDistance = new Distance($targetDistanceInMeters, DistanceUnitCode::METER, new DistanceTable());
@@ -317,7 +326,8 @@ class FightPropertiesTest extends TestWithMockery
             $attackNumberModifierByTargetSize,
             $usesSimplifiedLightingRules,
             $currentMalusFromLightingContrast,
-            $attackNumberBonusFromZoology
+            $attackNumberBonusFromZoology,
+            $onHorseback ? $malusFromRiding : 0
         );
 
         $baseOfWoundsBonusFromZoology = 0;
@@ -355,7 +365,8 @@ class FightPropertiesTest extends TestWithMockery
             $defenseNumberMalusByStrengthWithShield,
             $coverOfShield,
             $skillsMalusToCoverWithShield,
-            $coverBonusFromZoology
+            $coverBonusFromZoology,
+            $onHorseback ? $malusFromRiding : 0
         );
 
         $this->I_can_get_moved_distance($fightProperties, $expectedMovedDistance);
@@ -365,14 +376,15 @@ class FightPropertiesTest extends TestWithMockery
     {
         // enemy is faster than you, weapon is two handed only, holds weapon by two hands, weapon in main hand,
         // weapon is shield, weapon is shooting, weapon is longer or same as shield, target distance in meters,
-        // speed modifier from combat actions, uses simplified lighting rules, malus from lighting contrast, fights animal
+        // speed modifier from combat actions, uses simplified lighting rules, malus from lighting contrast,
+        // malus from riding, on horseback, fights animal
         return [
-            [true, false, false, true, false, false, true, 0, 0, true, 0, false],
-            [true, false, false, true, false, false, false, 0, 0, true, 0, true],
-            [true, false /* not shooting */, false, false, true, false, true, 14789 /* distance should be ignored for non-ranged weapon */, 4596, false, 0, false],
-            [false, false, true, true, false, true, false, 1, -741, true, -987654 /* malus from lighting should be ignored on simplified rules usage */, false],
-            [false, false, true, true, false, true, true, 78515, 0, false, -123 /* odd */, false],
-            [false, true, true, false, true, false, false, 0, 1, false, -2 /* even */, true],
+            [true, false, false, true, false, false, true, 0, 0, true, 0, -5, false, false],
+            [true, false, false, true, false, false, false, 0, 0, true, 0, -5, true, true],
+            [true, false /* not shooting */, false, false, true, false, true, 14789 /* distance should be ignored for non-ranged weapon */, 4596, false, 0, 0, false, false],
+            [false, false, true, true, false, true, false, 1, -741, true, -987654 /* malus from lighting should be ignored on simplified rules usage */, -1, true, false],
+            [false, false, true, true, false, true, true, 78515, 0, false, -123 /* odd */, -11, false, false],
+            [false, true, true, false, true, false, false, 0, 1, false, -2 /* even */, -11, true, true],
         ];
     }
 
@@ -393,6 +405,7 @@ class FightPropertiesTest extends TestWithMockery
      * @param ShieldCode $shieldCode
      * @param int $shieldLength
      * @param int $combatActionsFightNumberModifier
+     * @param int $ridingMalusToFightNumber
      */
     private function I_can_get_expected_fight_and_fight_number(
         FightProperties $fightProperties,
@@ -410,7 +423,8 @@ class FightPropertiesTest extends TestWithMockery
         $weaponlikeLength,
         ShieldCode $shieldCode,
         $shieldLength,
-        $combatActionsFightNumberModifier
+        $combatActionsFightNumberModifier,
+        int $ridingMalusToFightNumber
     )
     {
         $this->addCorrectionByHeightTable(
@@ -441,6 +455,7 @@ class FightPropertiesTest extends TestWithMockery
                 + $fightNumberMalusFromShield
                 + $fightNumberMalusFromShieldAsWeapon // this is conditioned - mostly zero
                 + $combatActionsFightNumberModifier
+                + $ridingMalusToFightNumber
             );
         self::assertSame($expectedFightNumber->getValue(), $fightNumber->getValue(), __FUNCTION__ . ' expected different value');
     }
@@ -501,6 +516,7 @@ class FightPropertiesTest extends TestWithMockery
      * @param bool $usesSimplifiedLightingRules
      * @param int $currentMalusFromLightingContrast
      * @param int $attackNumberBonusFromZoology
+     * @param int $malusFromRiding
      */
     private function I_can_get_expected_shooting_attack_and_attack_number(
         FightProperties $fightProperties,
@@ -516,7 +532,8 @@ class FightPropertiesTest extends TestWithMockery
         $attackNumberModifierByTargetSize,
         $usesSimplifiedLightingRules,
         $currentMalusFromLightingContrast,
-        int $attackNumberBonusFromZoology
+        int $attackNumberBonusFromZoology,
+        int $malusFromRiding
     )
     {
         $shooting = $fightProperties->getShooting();
@@ -544,6 +561,7 @@ class FightPropertiesTest extends TestWithMockery
             + $attackNumberModifierByTargetSize
             + ($usesSimplifiedLightingRules ? 0 : round($currentMalusFromLightingContrast / 2 /* just half */))
             + $attackNumberBonusFromZoology
+            + $malusFromRiding
         );
         self::assertSame(
             $expectedAttackNumber->getValue(),
@@ -636,6 +654,7 @@ class FightPropertiesTest extends TestWithMockery
      * @param int $coverOfShield
      * @param int $skillsMalusToCoverWithShield
      * @param int $coverBonusFromZoology
+     * @param int $malusFromRiding
      */
     private function I_can_get_defense_and_defense_number(
         FightProperties $fightProperties,
@@ -649,7 +668,8 @@ class FightPropertiesTest extends TestWithMockery
         $defenseNumberMalusByStrengthWithShield,
         $coverOfShield,
         $skillsMalusToCoverWithShield,
-        int $coverBonusFromZoology
+        int $coverBonusFromZoology,
+        int $malusFromRiding
     )
     {
         $defense = $fightProperties->getDefense();
@@ -659,7 +679,9 @@ class FightPropertiesTest extends TestWithMockery
 
         self::assertInstanceOf(DefenseNumber::class, $fightProperties->getDefenseNumber());
         $expectedDefenseNumber = DefenseNumber::getIt(Defense::getIt($bodyPropertiesForFight->getAgility()))
-            ->add($defenseNumberModifierFromCombatActions + ($usesSimplifiedLightingRules ? 0 : $currentMalusFromLightingContrast));
+            ->add($defenseNumberModifierFromCombatActions + ($usesSimplifiedLightingRules ? 0 : $currentMalusFromLightingContrast)
+                + $malusFromRiding
+            );
         self::assertSame($expectedDefenseNumber->getValue(), $fightProperties->getDefenseNumber()->getValue());
 
         $expectedDefenseNumberWithWeapon = $expectedDefenseNumber->add(
@@ -1039,6 +1061,26 @@ class FightPropertiesTest extends TestWithMockery
     }
 
     /**
+     * @param Skills|\Mockery\MockInterface $skills
+     * @param $malusFromRiding
+     */
+    private function addMalusToAttackNumberByRiding(Skills $skills, int $malusFromRiding)
+    {
+        $skills->shouldReceive('getMalusToAttackNumberWhenRiding')
+            ->andReturn($malusFromRiding);
+    }
+
+    /**
+     * @param Skills|\Mockery\MockInterface $skills
+     * @param $malusFromRiding
+     */
+    private function addMalusToDefenseNumberByRiding(Skills $skills, int $malusFromRiding)
+    {
+        $skills->shouldReceive('getMalusToDefenseNumberWhenRiding')
+            ->andReturn($malusFromRiding);
+    }
+
+    /**
      * @param CombatActions|\Mockery\MockInterface $combatActions
      * @param $attackNumberModifier
      */
@@ -1312,14 +1354,14 @@ class FightPropertiesTest extends TestWithMockery
      * @param Skills|\Mockery\MockInterface $skills
      * @param WeaponlikeCode $weaponlikeCode
      * @param MissingWeaponSkillTable $expectedMissingWeaponSkillTable
-     * @param bool $fightsWithTwoWeapons ,
+     * @param bool $fightsWithTwoWeapons
      * @param int $malusFromWeaponlike
      */
-    private function addFightNumberMalusFromWeaponlikeBySkills(
+    private function addMalusToFightNumberWithWeaponlike(
         Skills $skills,
         WeaponlikeCode $weaponlikeCode,
         MissingWeaponSkillTable $expectedMissingWeaponSkillTable,
-        $fightsWithTwoWeapons,
+        bool $fightsWithTwoWeapons,
         $malusFromWeaponlike
     )
     {
@@ -1334,6 +1376,18 @@ class FightPropertiesTest extends TestWithMockery
                     return $malusFromWeaponlike;
                 }
             );
+    }
+
+    /**
+     * @see FightProperties::getFightNumberMalusFromWeaponlikesBySkills
+     * @param Skills|\Mockery\MockInterface $skills
+     * @param int $malusFromRiding
+     */
+    private function addMalusToFightNumberByRiding(Skills $skills, int $malusFromRiding)
+    {
+        /** @noinspection PhpUnusedParameterInspection */
+        $skills->shouldReceive('getMalusToFightNumberWhenRiding')
+            ->andReturn($malusFromRiding);
     }
 
     /**
@@ -1589,6 +1643,7 @@ class FightPropertiesTest extends TestWithMockery
             $shieldCode,
             false, // enemy is not faster now
             $this->createGlared(),
+            false, // not riding (whatever here)
             false // not fighting animal (whatever here)
         );
     }
@@ -1655,6 +1710,7 @@ class FightPropertiesTest extends TestWithMockery
             $shieldCode,
             false, // enemy is not faster now
             $this->createGlared(),
+            false, // not riding (whatever here)
             false // not fighting animal (whatever here)
         );
     }
@@ -1708,6 +1764,7 @@ class FightPropertiesTest extends TestWithMockery
             $shieldCode,
             false, // enemy is not faster now
             $this->createGlared(),
+            false, // not riding (whatever here)
             false // not fighting animal (whatever here)
         );
     }
@@ -1754,6 +1811,7 @@ class FightPropertiesTest extends TestWithMockery
             $shieldCode,
             false, // enemy is not faster now (does not affect this test)
             $this->createGlared(),
+            false, // not riding (whatever here)
             false // not fighting animal (whatever here)
         );
     }
@@ -1799,6 +1857,7 @@ class FightPropertiesTest extends TestWithMockery
             $shieldCode,
             false, // enemy is not faster now (does not affect this test)
             $this->createGlared(),
+            false, // not riding (whatever here)
             false // not fighting animal (whatever here)
         );
     }
@@ -1841,6 +1900,7 @@ class FightPropertiesTest extends TestWithMockery
             $shieldCode,
             false, // enemy is not faster now (does not affect this test)
             $this->createGlared(),
+            false, // not riding (whatever here)
             false // not fighting animal (whatever here)
         );
     }
