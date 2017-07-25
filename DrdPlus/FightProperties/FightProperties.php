@@ -10,7 +10,7 @@ use DrdPlus\Codes\Armaments\RangedWeaponCode;
 use DrdPlus\Codes\Armaments\ShieldCode;
 use DrdPlus\Codes\Armaments\WeaponCode;
 use DrdPlus\Codes\Armaments\WeaponlikeCode;
-use DrdPlus\Codes\DistanceUnitCode;
+use DrdPlus\Codes\Units\DistanceUnitCode;
 use DrdPlus\Codes\ItemHoldingCode;
 use DrdPlus\Codes\ProfessionCode;
 use DrdPlus\Codes\Body\WoundTypeCode;

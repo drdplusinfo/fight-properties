@@ -8,7 +8,7 @@ use DrdPlus\Codes\Armaments\MeleeWeaponCode;
 use DrdPlus\Codes\Armaments\RangedWeaponCode;
 use DrdPlus\Codes\Armaments\ShieldCode;
 use DrdPlus\Codes\Armaments\WeaponlikeCode;
-use DrdPlus\Codes\DistanceUnitCode;
+use DrdPlus\Codes\Units\DistanceUnitCode;
 use DrdPlus\Codes\ItemHoldingCode;
 use DrdPlus\Codes\ProfessionCode;
 use DrdPlus\Codes\Body\WoundTypeCode;
@@ -1113,7 +1113,7 @@ class FightPropertiesTest extends TestWithMockery
                 use ($encounterRangeValue, $expectedStrength) {
                     self::assertSame($expectedStrength->getValue(), $strength->getValue());
 
-                    return $encounterRangeValue;
+                    return EncounterRange::getIt($encounterRangeValue);
                 }
             );
     }
