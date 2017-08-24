@@ -267,6 +267,8 @@ class FightPropertiesTest extends TestWithMockery
             $onHorseback,
             $fightsAnimal
         );
+        self::assertInstanceOf(Strength::class, $fightProperties->getStrengthForWeaponlike());
+        self::assertInstanceOf(Strength::class, $fightProperties->getStrengthForShield());
 
         $this->I_can_get_expected_fight_and_fight_number(
             $fightProperties,

@@ -306,7 +306,7 @@ class FightProperties extends StrictObject
     /**
      * @return Strength
      */
-    private function getStrengthForWeaponlike(): Strength
+    public function getStrengthForWeaponlike(): Strength
     {
         return $this->getStrengthForWeaponOrShield($this->weaponlike, $this->weaponlikeHolding);
     }
@@ -344,7 +344,7 @@ class FightProperties extends StrictObject
      * @return Strength
      * @throws \DrdPlus\FightProperties\Exceptions\NoHandLeftForShield
      */
-    private function getStrengthForShield(): Strength
+    public function getStrengthForShield(): Strength
     {
         return $this->getStrengthForWeaponOrShield($this->shield, $this->getShieldHolding());
     }
