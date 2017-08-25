@@ -1602,10 +1602,10 @@ class FightPropertiesTest extends TestWithMockery
      * @param bool $helmIsBearable
      */
     public function I_can_not_create_it_with_unbearable_weapon_and_shield(
-        $weaponIsBearable,
-        $shieldIsBearable,
-        $armorIsBearable,
-        $helmIsBearable
+        bool $weaponIsBearable,
+        bool $shieldIsBearable,
+        bool $armorIsBearable,
+        bool $helmIsBearable
     )
     {
         $armourer = $this->createArmourer();

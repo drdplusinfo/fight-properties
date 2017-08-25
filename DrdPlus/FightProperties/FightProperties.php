@@ -3,6 +3,7 @@ namespace DrdPlus\FightProperties;
 
 use DrdPlus\Calculations\SumAndRound;
 use DrdPlus\Codes\Armaments\ArmamentCode;
+use DrdPlus\Codes\Armaments\ArmorCode;
 use DrdPlus\Codes\Armaments\BodyArmorCode;
 use DrdPlus\Codes\Armaments\HelmCode;
 use DrdPlus\Codes\Armaments\MeleeWeaponCode;
@@ -194,7 +195,9 @@ class FightProperties extends StrictObject
         /** @noinspection ExceptionsAnnotatingAndHandlingInspection */
         if (!$armourer->canUseArmament($armamentCode, $strength, $size)) {
             throw new Exceptions\CanNotUseArmamentBecauseOfMissingStrength(
-                "'{$armamentCode}' is too heavy to be used by with strength {$size}"
+                "'{$armamentCode}' is too heavy"
+                . ($armamentCode instanceof ArmorCode ? " for body of size {$strength}" : '')
+                . " to be used by with strength {$strength}"
             );
         }
     }
