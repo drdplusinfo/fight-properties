@@ -629,10 +629,6 @@ class FightProperties extends StrictObject
                 $this->getEncounterRange(),
                 $this->getMaximalRange()
             );
-        }
-
-        // distance effect (for ranged only)
-        if ($this->weaponlike->isRanged()) {
             $attackNumberModifier += $armourer->getAttackNumberModifierBySize($targetSize);
         }
 
