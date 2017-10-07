@@ -156,7 +156,14 @@ class FightPropertiesTest extends TestWithMockery
             false, // does not fight with two weapons
             $baseOfWoundsMalusFromSkills = -12607
         );
-        $this->addBaseOfWoundsBonusByHolding($armourer, $weaponlikeCode, $holdWeaponByTwoHands, $baseOfWoundsBonusForHolding = 748);
+        if ($holdWeaponByTwoHands) {
+            $weaponHolding = ItemHoldingCode::getIt(ItemHoldingCode::TWO_HANDS);
+        } elseif ($weaponIsInMainHand) {
+            $weaponHolding = ItemHoldingCode::getIt(ItemHoldingCode::MAIN_HAND);
+        } else {
+            $weaponHolding = ItemHoldingCode::getIt(ItemHoldingCode::OFFHAND);
+        }
+        $this->addBaseOfWoundsBonusByHolding($armourer, $weaponlikeCode, $weaponHolding, $baseOfWoundsBonusForHolding = 748);
         $missingShieldSkillsTable = new ShieldUsageSkillTable();
         $tables = $this->createTables($weaponlikeCode, $combatActionValues, $armourer, $missingWeaponSkillsTable, $missingShieldSkillsTable);
         $this->addWoundsTypeOf($tables, $weaponlikeCode, WoundTypeCode::CUT);
@@ -242,13 +249,6 @@ class FightPropertiesTest extends TestWithMockery
             $expectedMovedDistance = $this->createDistance(0.0);
         }
 
-        if ($holdWeaponByTwoHands) {
-            $weaponHolding = ItemHoldingCode::getIt(ItemHoldingCode::TWO_HANDS);
-        } elseif ($weaponIsInMainHand) {
-            $weaponHolding = ItemHoldingCode::getIt(ItemHoldingCode::MAIN_HAND);
-        } else {
-            $weaponHolding = ItemHoldingCode::getIt(ItemHoldingCode::OFFHAND);
-        }
         $this->addStrengthForWeaponOrShield(
             $armourer,
             $weaponlikeCode,
@@ -1520,19 +1520,19 @@ class FightPropertiesTest extends TestWithMockery
     /**
      * @param Armourer|\Mockery\MockInterface $armourer
      * @param WeaponlikeCode $weaponlikeCode
-     * @param $holdsByTwoHands
+     * @param $weaponHolding
      * @param int $bonusFromHolding
      */
     private function addBaseOfWoundsBonusByHolding(
         Armourer $armourer,
         WeaponlikeCode $weaponlikeCode,
-        $holdsByTwoHands,
-        $bonusFromHolding
+        ItemHoldingCode $weaponHolding,
+        int $bonusFromHolding
     )
     {
         $armourer->shouldReceive('getBaseOfWoundsBonusForHolding')
             ->atLeast()->once()
-            ->with($weaponlikeCode, $holdsByTwoHands)
+            ->with($weaponlikeCode, $weaponHolding)
             ->andReturn($bonusFromHolding);
     }
 

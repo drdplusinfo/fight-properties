@@ -658,7 +658,7 @@ class FightProperties extends StrictObject
             /** @noinspection ExceptionsAnnotatingAndHandlingInspection */
             $baseOfWoundsValue += $this->tables->getArmourer()->getBaseOfWoundsBonusForHolding(
                 $this->weaponlike,
-                $this->weaponlikeHolding->holdsByTwoHands()
+                $this->weaponlikeHolding
             );
 
             // action effects
