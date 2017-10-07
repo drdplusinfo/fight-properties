@@ -319,28 +319,17 @@ class FightProperties extends StrictObject
      * (fighter strength is considered higher respectively), see details in PPH page 93, left column.
      *
      * @param WeaponlikeCode $weaponOrShield
-     * @param ItemHoldingCode $holding
+     * @param ItemHoldingCode $itemHoldingCode
      * @return Strength
      */
-    private function getStrengthForWeaponOrShield(WeaponlikeCode $weaponOrShield, ItemHoldingCode $holding): Strength
+    private function getStrengthForWeaponOrShield(WeaponlikeCode $weaponOrShield, ItemHoldingCode $itemHoldingCode): Strength
     {
-        if ($holding->holdsByMainHand()) {
-            return $this->bodyPropertiesForFight->getStrengthOfMainHand();
-        }
-        if ($holding->holdsByOffhand()) {
-            // your less-dominant hand is weaker (try it)
-            return $this->bodyPropertiesForFight->getStrengthOfOffhand();
-        }
-        // two hands holding
         /** @noinspection ExceptionsAnnotatingAndHandlingInspection */
-        if ($this->tables->getArmourer()->isTwoHandedOnly($weaponOrShield)) {
-            // it is both-hands only weapon, can NOT count +2 bonus
-            return $this->bodyPropertiesForFight->getStrengthOfMainHand();
-        }
-        // if one-handed is kept by both hands, the required strength is lower (fighter strength is higher respectively)
-
-        /** @noinspection ExceptionsAnnotatingAndHandlingInspection */
-        return $this->bodyPropertiesForFight->getStrengthOfMainHand()->add(2);
+        return $this->tables->getArmourer()->getStrengthForWeaponOrShield(
+            $weaponOrShield,
+            $itemHoldingCode,
+            $this->bodyPropertiesForFight->getStrengthOfMainHand()
+        );
     }
 
     /**
