@@ -11,7 +11,7 @@ use DrdPlus\Codes\Armaments\WeaponlikeCode;
 use DrdPlus\Codes\Units\DistanceUnitCode;
 use DrdPlus\Codes\ItemHoldingCode;
 use DrdPlus\Codes\ProfessionCode;
-use DrdPlus\Codes\Body\WoundTypeCode;
+use DrdPlus\Codes\Body\PhysicalWoundTypeCode;
 use DrdPlus\CombatActions\CombatActions;
 use DrdPlus\FightProperties\BodyPropertiesForFight;
 use DrdPlus\FightProperties\FightProperties;
@@ -166,7 +166,7 @@ class FightPropertiesTest extends TestWithMockery
         $this->addBaseOfWoundsBonusByHolding($armourer, $weaponlikeCode, $weaponHolding, $baseOfWoundsBonusForHolding = 748);
         $missingShieldSkillsTable = new ShieldUsageSkillTable();
         $tables = $this->createTables($weaponlikeCode, $combatActionValues, $armourer, $missingWeaponSkillsTable, $missingShieldSkillsTable);
-        $this->addWoundsTypeOf($tables, $weaponlikeCode, WoundTypeCode::CUT);
+        $this->addWoundsTypeOf($tables, $weaponlikeCode, PhysicalWoundTypeCode::CUT);
         $this->addBaseOfWoundsModifierFromActions($combatActions, false /* weapon is not crushing */, $baseOfWoundsModifierFromActions = -1357);
 
         // fight number

@@ -14,7 +14,7 @@ use DrdPlus\Codes\Armaments\WeaponlikeCode;
 use DrdPlus\Codes\Units\DistanceUnitCode;
 use DrdPlus\Codes\ItemHoldingCode;
 use DrdPlus\Codes\ProfessionCode;
-use DrdPlus\Codes\Body\WoundTypeCode;
+use DrdPlus\Codes\Body\PhysicalWoundTypeCode;
 use DrdPlus\CombatActions\CombatActions;
 use DrdPlus\Health\Inflictions\Glared;
 use DrdPlus\Properties\Base\Strength;
@@ -665,7 +665,7 @@ class FightProperties extends StrictObject
             /** @noinspection ExceptionsAnnotatingAndHandlingInspection */
             $baseOfWoundsValue += $this->combatActions->getBaseOfWoundsModifier(
                 $this->tables->getWeaponlikeTableByWeaponlikeCode($this->weaponlike)
-                    ->getWoundsTypeOf($this->weaponlike) === WoundTypeCode::CRUSH
+                    ->getWoundsTypeOf($this->weaponlike) === PhysicalWoundTypeCode::CRUSH
             );
             if ($this->fightsFreeWillAnimal) {
                 $baseOfWoundsValue += $this->skills->getBonusToBaseOfWoundsAgainstFreeWillAnimal();
