@@ -1,7 +1,7 @@
 {
   "name": "drdplus/fight-properties",
   "license": "MIT",
-  "type": "project",
+  "type": "library",
   "description": "Final properties including battle statistics, current afflictions and boosts and by first and next levels of them for Drd+",
   "autoload": {
     "psr-4": {
@@ -20,7 +20,5 @@
     "phpunit/phpunit": "~7.0",
     "mockery/mockery": "~1.0",
     "granam/exceptions-hierarchy": "~4.0"
-  },
-  "minimum-stability": "dev",
-  "prefer-stable": true
+  }
 }
