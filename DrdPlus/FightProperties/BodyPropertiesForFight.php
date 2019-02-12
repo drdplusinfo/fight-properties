@@ -1,12 +1,12 @@
 <?php
 namespace DrdPlus\FightProperties;
 
-use DrdPlus\Properties\Base\Agility;
-use DrdPlus\Properties\Base\Charisma;
-use DrdPlus\Properties\Base\Intelligence;
-use DrdPlus\Properties\Base\Knack;
-use DrdPlus\Properties\Base\Strength;
-use DrdPlus\Properties\Base\Will;
+use DrdPlus\BaseProperties\Agility;
+use DrdPlus\BaseProperties\Charisma;
+use DrdPlus\BaseProperties\Intelligence;
+use DrdPlus\BaseProperties\Knack;
+use DrdPlus\BaseProperties\Strength;
+use DrdPlus\BaseProperties\Will;
 use DrdPlus\Properties\Body\Height;
 use DrdPlus\Properties\Body\Size;
 use DrdPlus\Properties\Combat\BaseProperties;
@@ -101,7 +101,6 @@ class BodyPropertiesForFight extends StrictObject implements BaseProperties
     public function getStrengthOfOffhand(): Strength
     {
         if ($this->strengthOfOffhand === null) {
-            /** @noinspection ExceptionsAnnotatingAndHandlingInspection */
             $this->strengthOfOffhand = $this->getStrength()->sub(2); // offhand has a malus to strength (try to carry you purchase in offhand sometimes...)
         }
 

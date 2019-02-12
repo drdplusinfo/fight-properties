@@ -2,12 +2,12 @@
 namespace DrdPlus\Tests\FightProperties;
 
 use DrdPlus\FightProperties\BodyPropertiesForFight;
-use DrdPlus\Properties\Base\Agility;
-use DrdPlus\Properties\Base\Charisma;
-use DrdPlus\Properties\Base\Intelligence;
-use DrdPlus\Properties\Base\Knack;
-use DrdPlus\Properties\Base\Strength;
-use DrdPlus\Properties\Base\Will;
+use DrdPlus\BaseProperties\Agility;
+use DrdPlus\BaseProperties\Charisma;
+use DrdPlus\BaseProperties\Intelligence;
+use DrdPlus\BaseProperties\Knack;
+use DrdPlus\BaseProperties\Strength;
+use DrdPlus\BaseProperties\Will;
 use DrdPlus\Properties\Body\Height;
 use DrdPlus\Properties\Body\HeightInCm;
 use DrdPlus\Properties\Body\Size;

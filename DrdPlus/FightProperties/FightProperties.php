@@ -17,7 +17,7 @@ use DrdPlus\Codes\ProfessionCode;
 use DrdPlus\Codes\Body\PhysicalWoundTypeCode;
 use DrdPlus\CombatActions\CombatActions;
 use DrdPlus\Health\Inflictions\Glared;
-use DrdPlus\Properties\Base\Strength;
+use DrdPlus\BaseProperties\Strength;
 use DrdPlus\Properties\Body\Size;
 use DrdPlus\Properties\Combat\Attack;
 use DrdPlus\Properties\Combat\AttackNumber;
