@@ -8,19 +8,13 @@
       "DrdPlus\\": "DrdPlus/"
     }
   },
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "/home/jaroslav/projects/drdplus/properties"
-    }
-  ],
   "require": {
     "php": ">=7.1",
-    "drdplus/properties-by-levels": "^1.0",
-    "drdplus/health": "^1.0",
-    "drdplus/skills": "^1.0",
-    "drdplus/combat-actions": "^1.0",
-    "drdplus/armourer": "^1.1"
+    "drdplus/properties-by-levels": "~2.0",
+    "drdplus/health": "~2.0",
+    "drdplus/skills": "~2.0",
+    "drdplus/combat-actions": "~2.0",
+    "drdplus/armourer": "~2.0"
   },
   "require-dev": {
     "phpunit/phpunit": "~7.0",

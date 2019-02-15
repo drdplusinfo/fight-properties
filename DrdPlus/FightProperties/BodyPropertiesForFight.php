@@ -79,25 +79,16 @@ class BodyPropertiesForFight extends StrictObject implements BaseProperties
         $this->speed = $speed;
     }
 
-    /**
-     * @return Strength
-     */
     public function getStrength(): Strength
     {
         return $this->strength;
     }
 
-    /**
-     * @return Strength
-     */
     public function getStrengthOfMainHand(): Strength
     {
         return $this->getStrength();
     }
 
-    /**
-     * @return Strength
-     */
     public function getStrengthOfOffhand(): Strength
     {
         if ($this->strengthOfOffhand === null) {
@@ -107,65 +98,41 @@ class BodyPropertiesForFight extends StrictObject implements BaseProperties
         return $this->strengthOfOffhand;
     }
 
-    /**
-     * @return Agility
-     */
     public function getAgility(): Agility
     {
         return $this->agility;
     }
 
-    /**
-     * @return Knack
-     */
     public function getKnack(): Knack
     {
         return $this->knack;
     }
 
-    /**
-     * @return Will
-     */
     public function getWill(): Will
     {
         return $this->will;
     }
 
-    /**
-     * @return Intelligence
-     */
     public function getIntelligence(): Intelligence
     {
         return $this->intelligence;
     }
 
-    /**
-     * @return Charisma
-     */
     public function getCharisma(): Charisma
     {
         return $this->charisma;
     }
 
-    /**
-     * @return Size
-     */
     public function getSize(): Size
     {
         return $this->size;
     }
 
-    /**
-     * @return Height
-     */
     public function getHeight(): Height
     {
         return $this->height;
     }
 
-    /**
-     * @return Speed
-     */
     public function getSpeed(): Speed
     {
         return $this->speed;
