@@ -18,11 +18,5 @@
     "phpunit/phpunit": "^8.3",
     "mockery/mockery": "^1.2",
     "granam/exceptions-hierarchy": "^5.0"
-  },
-  "repositories": [
-    {
-      "type": "git",
-      "url": "/home/jaroslav/projects/granam/tools"
-    }
-  ]
+  }
 }
