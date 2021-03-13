@@ -1892,7 +1892,7 @@ class FightPropertiesTest extends TestWithMockery
     public function I_can_not_create_it_with_weapon_incompatible_actions(): void
     {
         $this->expectException(\DrdPlus\FightProperties\Exceptions\ImpossibleActionsWithCurrentWeaponlike::class);
-        $this->expectExceptionMessageRegExp('~foo~');
+        $this->expectExceptionMessageMatches('~foo~');
         $armourer = $this->createArmourer();
 
         $weaponlikeCode = $this->createWeapon();
@@ -1987,7 +1987,7 @@ class FightPropertiesTest extends TestWithMockery
     public function I_can_not_use_shield_when_holding_weapon_by_two_hands(): void
     {
         $this->expectException(\DrdPlus\FightProperties\Exceptions\NoHandLeftForShield::class);
-        $this->expectExceptionMessageRegExp('~buckler when holding foo with~');
+        $this->expectExceptionMessageMatches('~buckler when holding foo with~');
         $armourer = $this->createArmourer();
 
         $weaponlikeCode = $this->createWeapon();
