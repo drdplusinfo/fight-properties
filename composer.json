@@ -10,18 +10,20 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "DrdPlus\\Tests\\": "tests"
+      "DrdPlus\\Tests\\": "tests",
+      "Granam\\Tests\\ExceptionsHierarchy\\": "vendor/granam/exceptions-hierarchy/tests/ExceptionsHierarchy"
     }
   },
   "require": {
     "php": ">=7.3",
-    "drdplus/properties-by-levels": "~2.0",
-    "drdplus/health": "~2.0",
-    "drdplus/combat-actions": "~2.0"
+    "drdplus/properties-by-levels": "~3.0",
+    "drdplus/health": "~3.0",
+    "drdplus/combat-actions": "~3.0"
   },
   "require-dev": {
     "phpunit/phpunit": "~9.0",
     "mockery/mockery": "~1.2",
-    "granam/exceptions-hierarchy": "~5.0"
+    "granam/exceptions-hierarchy": "^5.1",
+    "granam/test-with-mockery": "^2.0"
   }
 }
